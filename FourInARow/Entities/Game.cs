@@ -50,7 +50,8 @@
         {
             CheckIfGameWonVertical(player);
             CheckIfGameWonHorizontal(player);
-            CheckIfGameWonDiagonal(player);
+            CheckIfGameWonDiagonalUp(player);
+            CheckIfGameWonDiagonalDown(player);
         }
         private void CheckIfGameWonVertical(Player player)
         {
@@ -83,24 +84,24 @@
             }
         }
 
-        private void CheckIfGameWonDiagonal(Player player)
+        private void CheckIfGameWonDiagonalDown(Player player)
         {
             int coinCounter = 0;
-            int startColDiagonal = insertedCoinColumn - FindMinusOfDiagonal();
-            int startRowDiagonal = insertedCoinRow - FindMinusOfDiagonal();
-            int endColDiagonal = insertedCoinColumn + FindPlusOfDiagonal();
-            int endRowDiagonal = insertedCoinRow + FindPlusOfDiagonal();
+            int startColIndex = insertedCoinColumn - FindStartCounterDiagonalDown();
+            int startRowIndex = insertedCoinRow + FindStartCounterDiagonalDown();
+            int endColIndex = insertedCoinColumn + FindEndCounterDiagonalDown();
+            int endRowIndex = insertedCoinRow - FindEndCounterDiagonalDown();
 
-            while (startColDiagonal <= endColDiagonal && startRowDiagonal <= endRowDiagonal)
+            while (startColIndex <= endColIndex && startRowIndex >= endRowIndex)
             {
 
-                if (grid[startColDiagonal, startRowDiagonal] == player.PlayerCoin)
+                if (grid[startColIndex, startRowIndex] == player.PlayerCoin)
                     coinCounter++;
                 else
                     coinCounter = 0;
 
-                startColDiagonal++;
-                startRowDiagonal++;
+                startColIndex++;
+                startRowIndex--;
 
                 if (coinCounter == 4)
                 {
@@ -110,19 +111,62 @@
                 }
             }
         }
-        private int FindMinusOfDiagonal()
+
+        private int FindStartCounterDiagonalDown()
         {
-            int minusOfDiagonal = 0;
-            while (insertedCoinColumn - minusOfDiagonal > 0 && insertedCoinRow - minusOfDiagonal > 0)
-                minusOfDiagonal++;
-            return minusOfDiagonal;
+            int diagonalStartCounter = 0;
+            while (insertedCoinColumn - diagonalStartCounter > 0 && insertedCoinRow + diagonalStartCounter < TOTALROWS - 1)
+                diagonalStartCounter++;
+            return diagonalStartCounter;
         }
-        private int FindPlusOfDiagonal()
+        private int FindEndCounterDiagonalDown()
         {
-            int plusOfDiagonal = 0;
-            while (insertedCoinColumn + plusOfDiagonal < TOTALCOLUMNS - 1 && insertedCoinRow + plusOfDiagonal < TOTALROWS - 1)
-                plusOfDiagonal++;
-            return plusOfDiagonal;
+            int diagonalEndCounter = 0;
+            while (insertedCoinColumn + diagonalEndCounter < TOTALCOLUMNS - 1 && insertedCoinRow - diagonalEndCounter > 0)
+                diagonalEndCounter++;
+            return diagonalEndCounter;
+        }
+
+        private void CheckIfGameWonDiagonalUp(Player player)
+        {
+            int coinCounter = 0;
+            int startColIndex = insertedCoinColumn - FindStartCounterDiagonalUp();
+            int startRowIndex = insertedCoinRow - FindStartCounterDiagonalUp();
+            int endColIndex = insertedCoinColumn + FindEndCounterDiagonalUp();
+            int endRowIndex = insertedCoinRow + FindEndCounterDiagonalUp();
+
+            while (startColIndex <= endColIndex && startRowIndex <= endRowIndex)
+            {
+
+                if (grid[startColIndex, startRowIndex] == player.PlayerCoin)
+                    coinCounter++;
+                else
+                    coinCounter = 0;
+
+                startColIndex++;
+                startRowIndex++;
+
+                if (coinCounter == 4)
+                {
+                    ShowGrid();
+                    Console.WriteLine($"Congratulations! Player {player.PlayerName} won.");
+                    isGameWon = true;
+                }
+            }
+        }
+        private int FindStartCounterDiagonalUp()
+        {
+            int diagonalStartCounter = 0;
+            while (insertedCoinColumn - diagonalStartCounter > 0 && insertedCoinRow - diagonalStartCounter > 0)
+                diagonalStartCounter++;
+            return diagonalStartCounter;
+        }
+        private int FindEndCounterDiagonalUp()
+        {
+            int diagonalEndCounter = 0;
+            while (insertedCoinColumn + diagonalEndCounter < TOTALCOLUMNS - 1 && insertedCoinRow + diagonalEndCounter < TOTALROWS - 1)
+                diagonalEndCounter++;
+            return diagonalEndCounter;
         }
         private int GetPlayerChoice(Player player)
         {
